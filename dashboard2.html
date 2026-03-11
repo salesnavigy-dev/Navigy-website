@@ -234,6 +234,62 @@
   .leg-label { font-size: 11px; color: #5C6478; flex: 1; }
   .leg-pct { font-size: 11px; font-weight: 600; color: #0D0F14; }
   .panel-foot { font-size: 10.5px; color: #9AA0B2; margin-top: 8px; padding-top: 8px; border-top: 1px solid #F3F4F6; }
+
+  /* ══════════════════ MOBILE ══════════════════ */
+  @media (max-width: 768px) {
+    html, body { overflow-y: auto; overflow-x: hidden; height: auto; }
+    .shell { height: auto; min-height: 100%; }
+    .main  { overflow: visible; height: auto; }
+    .content { overflow: visible; flex: none; }
+
+    /* Hide sidebar entirely */
+    .sb { display: none; }
+
+    /* Topbar */
+    .topbar { padding: 0 14px; height: 40px; }
+    .tb-left { font-size: 11px; }
+    .av span { display: none; }
+
+    /* Content area */
+    .content { padding: 12px 14px 16px; gap: 10px; overflow-y: auto; }
+
+    /* Header row: stack on mobile */
+    .ch { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .ch-title { font-size: 17px; }
+    .ch-sub { font-size: 11px; }
+    .time-tabs { display: none; }
+    .ch > div:last-child > div:last-child { display: none; } /* hide gear */
+
+    /* Stat cards: keep 2 cols but tighter */
+    .stats { gap: 8px; }
+    .sc { padding: 10px 12px; }
+    .sc-label { font-size: 10px; margin-bottom: 6px; }
+    .sc-val { font-size: 24px; margin-bottom: 5px; }
+    .sc-delta { font-size: 10px; padding: 2px 6px; }
+
+    /* Panels: stack vertically */
+    .panels { grid-template-columns: 1fr; gap: 10px; flex: none; min-height: auto; }
+    .panel { padding: 12px 14px; overflow: visible; }
+    .panel-hd { font-size: 12px; margin-bottom: 10px; }
+
+    /* Campaign rows */
+    .camp-row { padding: 6px 0; gap: 8px; }
+    .camp-icon { width: 24px; height: 24px; border-radius: 6px; }
+    .camp-name { font-size: 11.5px; }
+    .camp-src  { font-size: 10px; }
+    .camp-val  { font-size: 12px; }
+    .badge { font-size: 9.5px; padding: 2px 5px; }
+
+    /* Donut panel */
+    .donut-wrap { gap: 12px; align-items: center; flex: none; }
+    .donut-svg-wrap svg { width: 90px; height: 90px; }
+    .donut-pct { font-size: 15px; }
+    .donut-lbl { font-size: 9px; }
+    .leg-label { font-size: 10.5px; }
+    .leg-pct   { font-size: 10.5px; }
+    .legend { gap: 6px; }
+    .panel-foot { font-size: 10px; }
+  }
 </style>
 </head>
 <body>
