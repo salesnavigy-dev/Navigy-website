@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Crecimiento — Navigy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;scroll-snap-type:y mandatory;}
+    body{font-family:'Inter',system-ui,sans-serif;color:#0D0F14;background:#0B0D12;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;}
+
+    /* Slide base */
+    .slide{
+      min-height:100vh;
+      width:100%;
+      scroll-snap-align:start;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding:60px 40px;
+      position:relative;
+      overflow:hidden;
+    }
+    .slide-inner{
+      width:100%;
+      max-width:960px;
+      margin:0 auto;
+    }
+
+    /* Slide counter */
+    .slide-num{
+      position:absolute;
+      bottom:32px;
+      right:40px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      opacity:.35;
+    }
+
+    /* Badge */
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#EBF1FC;
+      color:#3567C0;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      padding:5px 12px;
+      border-radius:100px;
+      margin-bottom:20px;
+    }
+    .badge-dark{
+      background:rgba(53,103,192,.18);
+      color:#5A8DE8;
+    }
+    .badge-dot{
+      width:6px;height:6px;
+      border-radius:50%;
+      background:#3567C0;
+    }
+
+    /* Pill */
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.85);
+      font-size:14px;font-weight:500;
+      padding:8px 16px;border-radius:100px;
+    }
+    .pill-blue{background:rgba(53,103,192,.2);border-color:rgba(90,141,232,.3);color:#A8C4F4;}
+
+    /* Card */
+    .card{
+      background:#fff;
+      border:1px solid #E2E6EF;
+      border-radius:12px;
+      padding:28px;
+      box-shadow:0 1px 3px rgba(13,15,20,.06),0 4px 12px rgba(13,15,20,.04);
+    }
+    .card-dark{
+      background:#13161F;
+      border:1px solid #252A3A;
+      border-radius:12px;
+      padding:28px;
+    }
+    .card-blue{
+      background:#EBF1FC;
+      border-radius:12px;
+      padding:28px;
+    }
+
+    /* Grid helpers */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+    .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;}
+
+    /* Step number */
+    .step-num{
+      width:36px;height:36px;min-width:36px;
+      border-radius:50%;
+      background:#EBF1FC;
+      color:#3567C0;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:14px;font-weight:800;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .step-num-dark{background:rgba(53,103,192,.2);color:#5A8DE8;}
+    .step-num-white{background:rgba(255,255,255,.12);color:#fff;}
+
+    /* Flow arrow */
+    .arrow{color:#7C869A;font-size:18px;text-align:center;margin:4px 0;}
+    .arrow-blue{color:#3567C0;}
+
+    /* Stat big */
+    .stat-big{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:56px;font-weight:800;
+      letter-spacing:-0.04em;
+      line-height:1;
+      color:#3567C0;
+    }
+
+    /* Icon circle */
+    .icon-circle{
+      width:44px;height:44px;min-width:44px;
+      border-radius:10px;
+      background:#EBF1FC;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .icon-circle-dark{background:rgba(53,103,192,.15);}
+
+    /* Slides color themes */
+    .s-dark{background:#0B0D12;color:#fff;}
+    .s-dark .slide-num{color:#fff;}
+    .s-light{background:#fff;color:#0D0F14;}
+    .s-light .slide-num{color:#0D0F14;}
+    .s-surface{background:#F5F6F9;color:#0D0F14;}
+    .s-surface .slide-num{color:#0D0F14;}
+    .s-blue{background:linear-gradient(135deg,#1E4A9A 0%,#3567C0 60%,#5A8DE8 100%);color:#fff;}
+    .s-blue .slide-num{color:#fff;}
+
+    /* Bullet list */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;font-size:16px;line-height:1.5;color:#3D4555;}
+    .blist li::before{content:'';width:6px;height:6px;min-width:6px;border-radius:50%;background:#3567C0;margin-top:7px;}
+    .blist-white li{color:rgba(255,255,255,.8);}
+    .blist-white li::before{background:#5A8DE8;}
+
+    /* Heading helpers */
+    .h-display{font-size:clamp(36px,5vw,64px);font-weight:800;letter-spacing:-0.04em;line-height:1.05;}
+    .h-title{font-size:clamp(28px,3.5vw,44px);font-weight:800;letter-spacing:-0.035em;line-height:1.1;}
+    .h-section{font-size:clamp(22px,2.8vw,34px);font-weight:700;letter-spacing:-0.025em;line-height:1.2;}
+    .h-card{font-size:18px;font-weight:700;letter-spacing:-0.015em;line-height:1.3;}
+
+    /* Divider */
+    .divider{height:1px;background:#E2E6EF;margin:24px 0;}
+    .divider-dark{background:#252A3A;}
+
+    /* Tag */
+    .tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.04em;}
+    .tag-green{background:#D1FAE5;color:#065F46;}
+    .tag-blue{background:#EBF1FC;color:#1E4A9A;}
+    .tag-orange{background:#FEF3C7;color:#92400E;}
+
+    /* Nav dots */
+    #nav-dots{
+      position:fixed;right:20px;top:50%;transform:translateY(-50%);
+      display:flex;flex-direction:column;gap:8px;z-index:100;
+    }
+    .dot{
+      width:6px;height:6px;border-radius:50%;
+      background:rgba(255,255,255,.25);
+      cursor:pointer;
+      transition:background 200ms ease,transform 200ms ease;
+    }
+    .dot.active{background:#3567C0;transform:scale(1.4);}
+
+    /* Logo top-left on dark slides */
+    .slide-logo{
+      position:absolute;top:28px;left:40px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:15px;font-weight:800;
+      letter-spacing:-0.02em;
+      color:rgba(255,255,255,.5);
+    }
+    .slide-logo-dark{color:rgba(0,0,0,.3);}
+
+    @media(max-width:640px){
+      .g2,.g3,.g4{grid-template-columns:1fr;}
+      .slide{padding:48px 20px;}
+      .slide-num{right:20px;}
+      #nav-dots{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<div id="nav-dots"></div>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 1 — TÍTULO
+═══════════════════════════════════════════════ -->
+<section class="slide s-dark" id="slide-1">
+  <div class="slide-logo">Navigy</div>
+  <!-- Background radial glow -->
+  <div style="position:absolute;top:-120px;left:-120px;width:600px;height:600px;background:radial-gradient(circle,rgba(53,103,192,.18) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(90,141,232,.12) 0%,transparent 70%);pointer-events:none;"></div>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div class="badge badge-dark" style="margin:0 auto 24px;">
+      <span class="badge-dot" style="background:#5A8DE8;"></span>
+      Propuesta personalizada — Clínica Dental · Jerez
+    </div>
+
+    <h1 class="h-display" style="color:#fff;margin-bottom:20px;max-width:700px;margin-left:auto;margin-right:auto;">
+      Sistema de Crecimiento<br>
+      <span style="color:#5A8DE8;">de Pacientes</span>
+    </h1>
+
+    <p style="font-size:18px;color:rgba(255,255,255,.55);max-width:480px;margin:0 auto 40px;line-height:1.6;">
+      Cómo vamos a aumentar visibilidad, confianza y nuevos pacientes — sin depender de anuncios.
+    </p>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <span class="pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Más visibilidad</span>
+      <span class="pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>Más confianza</span>
+      <span class="pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>Más pacientes</span>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.25);">01 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 2 — CÓMO ELIGEN HOY
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-2">
+  <div class="slide-inner">
+    <div class="badge">
+      <span class="badge-dot"></span>El problema
+    </div>
+    <h2 class="h-title" style="margin-bottom:8px;">Así elige dentista un paciente hoy</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:40px;">El proceso de decisión pasa por 4 filtros antes de llamar.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start;">
+
+      <div class="card" style="text-align:center;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#3567C0;margin-bottom:12px;">1</div>
+        <div style="width:44px;height:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:6px;">Buscan en Google</div>
+        <div style="font-size:13px;color:#7C869A;line-height:1.5;">"dentista en Jerez"</div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#3567C0;margin-bottom:12px;">2</div>
+        <div style="width:44px;height:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:6px;">Miran reseñas</div>
+        <div style="font-size:13px;color:#7C869A;line-height:1.5;">Comparan estrellas y opiniones</div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#3567C0;margin-bottom:12px;">3</div>
+        <div style="width:44px;height:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:6px;">Revisan la web</div>
+        <div style="font-size:13px;color:#7C869A;line-height:1.5;">¿Transmite confianza?</div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#3567C0;margin-bottom:12px;">4</div>
+        <div style="width:44px;height:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:6px;">Miran Instagram</div>
+        <div style="font-size:13px;color:#7C869A;line-height:1.5;">Buscan el equipo y el ambiente</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:28px;background:#FEF3C7;border:1px solid #FCD34D;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:14px;">
+      <div style="font-size:24px;">⚠️</div>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#92400E;margin-bottom:2px;">Si la clínica no transmite confianza en esos 4 puntos</div>
+        <div style="font-size:14px;color:#B45309;">El paciente elige otra. Sin llamar. Sin dar oportunidad.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">02 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 3 — LA OPORTUNIDAD
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-3">
+  <div class="slide-inner">
+    <div class="badge">
+      <span class="badge-dot"></span>La oportunidad
+    </div>
+    <h2 class="h-title" style="margin-bottom:8px;">Miles de personas buscan dentista en Jerez cada mes</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">Y la mayoría de clínicas tienen los mismos problemas.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="card" style="border-top:3px solid #E03B3B;">
+            <div style="font-size:22px;margin-bottom:8px;">🌐</div>
+            <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Web antigua</div>
+            <div style="font-size:13px;color:#7C869A;">No genera confianza ni visitas</div>
+          </div>
+          <div class="card" style="border-top:3px solid #E03B3B;">
+            <div style="font-size:22px;margin-bottom:8px;">⭐</div>
+            <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Pocas reseñas</div>
+            <div style="font-size:13px;color:#7C869A;">No aparecen bien en Maps</div>
+          </div>
+          <div class="card" style="border-top:3px solid #E03B3B;">
+            <div style="font-size:22px;margin-bottom:8px;">📱</div>
+            <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Redes abandonadas</div>
+            <div style="font-size:13px;color:#7C869A;">Último post hace meses</div>
+          </div>
+          <div class="card" style="border-top:3px solid #E03B3B;">
+            <div style="font-size:22px;margin-bottom:8px;">📍</div>
+            <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Mala presencia</div>
+            <div style="font-size:13px;color:#7C869A;">Google Business sin optimizar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background:linear-gradient(135deg,#1E4A9A,#3567C0);border:none;color:#fff;display:flex;flex-direction:column;justify-content:center;text-align:center;min-height:220px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:16px;">La oportunidad real</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:800;letter-spacing:-0.04em;color:#fff;line-height:1;margin-bottom:8px;">Enorme</div>
+        <div style="font-size:15px;color:rgba(255,255,255,.7);line-height:1.5;max-width:280px;margin:0 auto;">
+          La competencia deja huecos enormes.<br>
+          <strong style="color:#fff;">Quien primero optimice, gana.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">03 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 4 — EL SISTEMA (5 PILARES)
+═══════════════════════════════════════════════ -->
+<section class="slide s-dark" id="slide-4">
+  <div class="slide-logo">Navigy</div>
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 30% 50%,rgba(53,103,192,.15) 0%,transparent 60%);pointer-events:none;"></div>
+
+  <div class="slide-inner">
+    <div class="badge badge-dark" style="margin-bottom:20px;">
+      <span class="badge-dot" style="background:#5A8DE8;"></span>El sistema
+    </div>
+    <h2 class="h-title" style="color:#fff;margin-bottom:8px;">Un sistema completo de captación</h2>
+    <p style="color:rgba(255,255,255,.45);font-size:16px;margin-bottom:36px;">5 pilares conectados. Todo funciona junto.</p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="card-dark" style="display:flex;align-items:center;gap:20px;border-left:3px solid #3567C0;">
+        <div style="width:40px;height:40px;min-width:40px;background:rgba(53,103,192,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#5A8DE8;">1</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:2px;">Página web profesional</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.45);">Diseñada para aparecer en Google y convertir visitas en citas</div>
+        </div>
+        <div class="tag tag-blue" style="white-space:nowrap;">Base</div>
+      </div>
+
+      <div class="card-dark" style="display:flex;align-items:center;gap:20px;border-left:3px solid #3567C0;">
+        <div style="width:40px;height:40px;min-width:40px;background:rgba(53,103,192,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#5A8DE8;">2</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:2px;">SEO y presencia en Google</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.45);">Aparecer cuando buscan "dentista en Jerez"</div>
+        </div>
+        <div class="tag tag-blue" style="white-space:nowrap;">Tráfico</div>
+      </div>
+
+      <div class="card-dark" style="display:flex;align-items:center;gap:20px;border-left:3px solid #3567C0;">
+        <div style="width:40px;height:40px;min-width:40px;background:rgba(53,103,192,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#5A8DE8;">3</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:2px;">Redes sociales</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.45);">Contenido que genera confianza cuando investigan la clínica</div>
+        </div>
+        <div class="tag tag-blue" style="white-space:nowrap;">Confianza</div>
+      </div>
+
+      <div class="card-dark" style="display:flex;align-items:center;gap:20px;border-left:3px solid #3567C0;">
+        <div style="width:40px;height:40px;min-width:40px;background:rgba(53,103,192,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#5A8DE8;">4</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:2px;">Campañas de email</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.45);">Activar la base de 30.000 contactos que ya tienen</div>
+        </div>
+        <div class="tag tag-blue" style="white-space:nowrap;">Reactivación</div>
+      </div>
+
+      <div class="card-dark" style="display:flex;align-items:center;gap:20px;border-left:3px solid #5A8DE8;background:rgba(53,103,192,.08);">
+        <div style="width:40px;height:40px;min-width:40px;background:rgba(90,141,232,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#A8C4F4;">5</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:2px;">Software Navigy</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.45);">CRM, pipeline y automatizaciones para no perder ningún paciente</div>
+        </div>
+        <div class="tag" style="background:rgba(90,141,232,.2);color:#A8C4F4;white-space:nowrap;">Control</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.25);">04 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 5 — PÁGINA WEB
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-5">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Pilar 1</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;">
+      <div>
+        <h2 class="h-title" style="margin-bottom:12px;">Página web profesional</h2>
+        <p style="color:#7C869A;font-size:15px;margin-bottom:28px;line-height:1.6;">El centro de todo el sistema. Diseñada para tres cosas:</p>
+        <ul class="blist" style="margin-bottom:28px;">
+          <li><strong>Aparecer en Google</strong> — estructura SEO desde el primer día</li>
+          <li><strong>Generar confianza</strong> — diseño profesional, equipo, reseñas</li>
+          <li><strong>Convertir visitas en citas</strong> — CTAs claros en cada sección</li>
+        </ul>
+        <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;margin-bottom:12px;">Incluye</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="tag tag-blue">Página principal</span>
+          <span class="tag tag-blue">Tratamientos</span>
+          <span class="tag tag-blue">Equipo</span>
+          <span class="tag tag-blue">Reseñas</span>
+          <span class="tag tag-blue">Blog SEO</span>
+          <span class="tag tag-blue">Reserva de cita</span>
+        </div>
+      </div>
+      <!-- Web mockup -->
+      <div style="background:#F5F6F9;border-radius:12px;padding:16px;border:1px solid #E2E6EF;">
+        <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(13,15,20,.1);">
+          <!-- Browser bar -->
+          <div style="background:#F5F6F9;padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #E2E6EF;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#E2E6EF;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#E2E6EF;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#E2E6EF;"></div>
+            <div style="flex:1;background:#fff;border-radius:4px;height:18px;margin-left:8px;display:flex;align-items:center;padding:0 8px;">
+              <span style="font-size:10px;color:#7C869A;">clinicadental.es</span>
+            </div>
+          </div>
+          <!-- Mock nav -->
+          <div style="background:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F5F6F9;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:800;color:#3567C0;">Clínica Dental</div>
+            <div style="display:flex;gap:12px;">
+              <div style="width:32px;height:6px;background:#E2E6EF;border-radius:3px;"></div>
+              <div style="width:32px;height:6px;background:#E2E6EF;border-radius:3px;"></div>
+              <div style="width:48px;height:20px;background:#3567C0;border-radius:4px;"></div>
+            </div>
+          </div>
+          <!-- Hero area -->
+          <div style="background:linear-gradient(135deg,#EBF1FC,#fff);padding:24px 16px;text-align:center;">
+            <div style="width:60%;height:12px;background:#0D0F14;border-radius:6px;margin:0 auto 8px;"></div>
+            <div style="width:45%;height:8px;background:#E2E6EF;border-radius:4px;margin:0 auto 16px;"></div>
+            <div style="width:80px;height:28px;background:#3567C0;border-radius:6px;margin:0 auto;"></div>
+          </div>
+          <!-- Cards row -->
+          <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:#F5F6F9;border-radius:6px;padding:10px;">
+              <div style="width:20px;height:20px;background:#EBF1FC;border-radius:4px;margin-bottom:6px;"></div>
+              <div style="width:100%;height:6px;background:#E2E6EF;border-radius:3px;margin-bottom:4px;"></div>
+              <div style="width:70%;height:5px;background:#E2E6EF;border-radius:3px;"></div>
+            </div>
+            <div style="background:#F5F6F9;border-radius:6px;padding:10px;">
+              <div style="width:20px;height:20px;background:#EBF1FC;border-radius:4px;margin-bottom:6px;"></div>
+              <div style="width:100%;height:6px;background:#E2E6EF;border-radius:3px;margin-bottom:4px;"></div>
+              <div style="width:70%;height:5px;background:#E2E6EF;border-radius:3px;"></div>
+            </div>
+            <div style="background:#F5F6F9;border-radius:6px;padding:10px;">
+              <div style="width:20px;height:20px;background:#EBF1FC;border-radius:4px;margin-bottom:6px;"></div>
+              <div style="width:100%;height:6px;background:#E2E6EF;border-radius:3px;margin-bottom:4px;"></div>
+              <div style="width:70%;height:5px;background:#E2E6EF;border-radius:3px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">05 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 6 — LABORATORIO DENTAL
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-6">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Diferenciación</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;">
+      <div>
+        <h2 class="h-title" style="margin-bottom:12px;">Página del laboratorio dental</h2>
+        <p style="color:#7C869A;font-size:15px;margin-bottom:24px;line-height:1.6;">
+          <strong style="color:#0D0F14;">Casi ninguna clínica muestra su laboratorio.</strong><br>
+          Es una ventaja competitiva enorme.
+        </p>
+        <ul class="blist" style="margin-bottom:24px;">
+          <li>Transmite más calidad y control</li>
+          <li>Demuestra tecnología propia</li>
+          <li>Genera confianza inmediata</li>
+        </ul>
+        <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;margin-bottom:12px;">La página explicará</div>
+        <ul class="blist">
+          <li>Proceso de fabricación</li>
+          <li>Tecnología y materiales utilizados</li>
+          <li>Ventajas para el paciente</li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;">🔬</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Más control sobre tratamientos</div>
+            <div style="font-size:13px;color:#7C869A;">El paciente entiende que todo se hace internamente, con más precisión.</div>
+          </div>
+        </div>
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;">⚙️</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Señal de tecnología</div>
+            <div style="font-size:13px;color:#7C869A;">Un laboratorio propio comunica inversión y modernidad.</div>
+          </div>
+        </div>
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;border-left:3px solid #3567C0;">
+          <div style="font-size:24px;">🏆</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Ventaja competitiva única</div>
+            <div style="font-size:13px;color:#7C869A;">La competencia no lo tiene. Aquí sí. Hay que mostrarlo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">06 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 7 — SEO Y GOOGLE
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-7">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Pilar 2</div>
+    <h2 class="h-title" style="margin-bottom:8px;">SEO y presencia en Google</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">El objetivo: cuando alguien busque dentista en Jerez, encontrar la clínica.</p>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;">
+          <div class="icon-circle"><svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Optimización completa de la web</div>
+            <div style="font-size:13px;color:#7C869A;">Títulos, descripciones, estructura, velocidad — todo preparado para Google.</div>
+          </div>
+        </div>
+        <div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;">
+          <div class="icon-circle"><svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg></div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Páginas por tratamiento</div>
+            <div style="font-size:13px;color:#7C869A;">Implantes, ortodoncia, blanqueamiento… cada uno con su propia página optimizada.</div>
+          </div>
+        </div>
+        <div class="card" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;">
+          <div class="icon-circle"><svg width="20" height="20" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg></div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:4px;">Presencia en Google Maps</div>
+            <div style="font-size:13px;color:#7C869A;">Aparecer en el pack local de Google cuando buscan cerca.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background:#0D0F14;border:none;color:#fff;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:16px;">Resultado esperado</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:8px;">Posición en resultados</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:80%;height:8px;background:#3567C0;border-radius:4px;"></div>
+            <div style="font-size:11px;color:rgba(255,255,255,.5);">Clínica</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:55%;height:8px;background:#252A3A;border-radius:4px;"></div>
+            <div style="font-size:11px;color:rgba(255,255,255,.3);">Competencia</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:40%;height:8px;background:#252A3A;border-radius:4px;"></div>
+            <div style="font-size:11px;color:rgba(255,255,255,.3);">Competencia</div>
+          </div>
+        </div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#5A8DE8;margin-bottom:4px;">Top 3</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.45);">En búsquedas locales</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">07 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 8 — GOOGLE BUSINESS PROFILE
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-8">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Google Maps</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Google Business Profile optimizado</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">Aquí es donde muchos pacientes toman la decisión final.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;margin-bottom:16px;">Lo que optimizaremos</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E2E6EF;border-radius:8px;padding:12px 16px;">
+            <div style="width:8px;height:8px;min-width:8px;border-radius:50%;background:#1DAA72;"></div>
+            <div style="font-size:14px;color:#0D0F14;">Categorías correctas del negocio</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E2E6EF;border-radius:8px;padding:12px 16px;">
+            <div style="width:8px;height:8px;min-width:8px;border-radius:50%;background:#1DAA72;"></div>
+            <div style="font-size:14px;color:#0D0F14;">Descripción profesional y con keywords</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E2E6EF;border-radius:8px;padding:12px 16px;">
+            <div style="width:8px;height:8px;min-width:8px;border-radius:50%;background:#1DAA72;"></div>
+            <div style="font-size:14px;color:#0D0F14;">Fotos de calidad de la clínica</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E2E6EF;border-radius:8px;padding:12px 16px;">
+            <div style="width:8px;height:8px;min-width:8px;border-radius:50%;background:#1DAA72;"></div>
+            <div style="font-size:14px;color:#0D0F14;">Fotos del equipo</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E2E6EF;border-radius:8px;padding:12px 16px;">
+            <div style="width:8px;height:8px;min-width:8px;border-radius:50%;background:#1DAA72;"></div>
+            <div style="font-size:14px;color:#0D0F14;">Lista completa de servicios y precios</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google card mockup -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div>
+            <div style="font-weight:700;font-size:16px;color:#0D0F14;margin-bottom:2px;">Clínica Dental</div>
+            <div style="font-size:12px;color:#7C869A;">Dentista · Jerez de la Frontera</div>
+          </div>
+          <div style="width:40px;height:40px;background:#EBF1FC;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🦷</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+          <div style="display:flex;gap:2px;">
+            <span style="color:#F59E0B;font-size:16px;">★★★★★</span>
+          </div>
+          <div style="font-weight:700;font-size:14px;color:#0D0F14;">4.9</div>
+          <div style="font-size:13px;color:#7C869A;">(87 reseñas)</div>
+        </div>
+        <div style="background:#F5F6F9;border-radius:8px;padding:10px;margin-bottom:12px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:11px;background:#fff;border:1px solid #E2E6EF;color:#3D4555;padding:3px 8px;border-radius:4px;">Implantes</span>
+            <span style="font-size:11px;background:#fff;border:1px solid #E2E6EF;color:#3D4555;padding:3px 8px;border-radius:4px;">Ortodoncia</span>
+            <span style="font-size:11px;background:#fff;border:1px solid #E2E6EF;color:#3D4555;padding:3px 8px;border-radius:4px;">Blanqueamiento</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;background:#3567C0;color:#fff;text-align:center;padding:8px;border-radius:6px;font-size:12px;font-weight:600;">Llamar</div>
+          <div style="flex:1;background:#EBF1FC;color:#3567C0;text-align:center;padding:8px;border-radius:6px;font-size:12px;font-weight:600;">Cómo llegar</div>
+          <div style="flex:1;background:#EBF1FC;color:#3567C0;text-align:center;padding:8px;border-radius:6px;font-size:12px;font-weight:600;">Web</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">08 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 9 — RESEÑAS
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-9">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Factor decisivo</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Sistema de reseñas automático</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">El número de reseñas y la nota media decide quién gana.</p>
+
+    <!-- Star comparison -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin-bottom:32px;">
+      <div class="card" style="text-align:center;opacity:.6;border-color:#E2E6EF;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#7C869A;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Clínica A</div>
+        <div style="font-size:36px;font-weight:800;color:#7C869A;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:4px;">4.2</div>
+        <div style="color:#E2E6EF;font-size:24px;margin-bottom:8px;">★★★★☆</div>
+        <div style="font-size:13px;color:#7C869A;">12 reseñas</div>
+      </div>
+
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#E2E6EF;">VS</div>
+
+      <div class="card" style="text-align:center;border-color:#3567C0;box-shadow:0 0 0 2px rgba(53,103,192,.15),0 4px 20px rgba(53,103,192,.12);">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#3567C0;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Clínica B ✓</div>
+        <div style="font-size:36px;font-weight:800;color:#0D0F14;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:4px;">4.8</div>
+        <div style="color:#F59E0B;font-size:24px;margin-bottom:8px;">★★★★★</div>
+        <div style="font-size:13px;color:#3567C0;font-weight:600;">87 reseñas</div>
+      </div>
+    </div>
+
+    <div style="background:#EBF1FC;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-weight:700;font-size:15px;color:#1E4A9A;margin-bottom:4px;">Casi siempre eligen la segunda. Sin dudar.</div>
+      <div style="font-size:14px;color:#3567C0;">Más reseñas = más confianza = más pacientes.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:22px;">🤖</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Automatización post-visita</div>
+          <div style="font-size:13px;color:#7C869A;">El sistema pide la reseña automáticamente después de cada cita.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:22px;">📱</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Cartel QR en la clínica</div>
+          <div style="font-size:13px;color:#7C869A;">El paciente deja la reseña en segundos antes de salir.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">09 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 10 — BLOG
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-10">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Contenido SEO</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Blog educativo</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">Capturar pacientes cuando están investigando, antes de que llamen a nadie.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px;">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#3567C0;"></div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;">Artículo</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:6px;line-height:1.4;">"¿Cuánto cuesta un implante dental en Jerez?"</div>
+        <div style="font-size:12px;color:#7C869A;">Búsqueda activa. Intención de compra alta.</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#3567C0;"></div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;">Artículo</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:6px;line-height:1.4;">"¿Cada cuánto hay que hacerse una limpieza dental?"</div>
+        <div style="font-size:12px;color:#7C869A;">Muy buscado. Trae pacientes que no se revisan.</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#3567C0;"></div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;">Artículo</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:6px;line-height:1.4;">"¿Cuánto dura una ortodoncia?"</div>
+        <div style="font-size:12px;color:#7C869A;">Padres con hijos adolescentes. Alta conversión.</div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E2E6EF;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;">
+      <div style="width:48px;height:48px;min-width:48px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" fill="none" stroke="#3567C0" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:3px;">Estos artículos posicionan en Google durante meses o años</div>
+        <div style="font-size:14px;color:#7C869A;">Tráfico gratuito y constante, sin depender de anuncios.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">10 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 11 — REDES SOCIALES
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-11">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Pilar 3</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Redes sociales</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:12px;">El objetivo no es ser viral. Es <strong style="color:#0D0F14;">generar confianza</strong>.</p>
+
+    <div style="background:#EBF1FC;border-radius:10px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:20px;">💡</div>
+      <div style="font-size:14px;color:#1E4A9A;font-weight:500;">Cuando alguien investiga la clínica, lo primero que mira es Instagram. Tiene que transmitir profesionalidad.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7C869A;margin-bottom:16px;">Tipo de contenido</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F5F6F9;border-radius:8px;">
+            <span style="font-size:18px;">❓</span>
+            <span style="font-size:14px;color:#0D0F14;">Preguntas frecuentes de pacientes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F5F6F9;border-radius:8px;">
+            <span style="font-size:18px;">👨‍⚕️</span>
+            <span style="font-size:14px;color:#0D0F14;">Presentación del equipo</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F5F6F9;border-radius:8px;">
+            <span style="font-size:18px;">🦷</span>
+            <span style="font-size:14px;color:#0D0F14;">Antes / después de tratamientos</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F5F6F9;border-radius:8px;">
+            <span style="font-size:18px;">🔬</span>
+            <span style="font-size:14px;color:#0D0F14;">Tecnología y laboratorio propio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram mockup -->
+      <div style="background:#fff;border:1px solid #E2E6EF;border-radius:12px;overflow:hidden;">
+        <div style="background:#fff;padding:12px 14px;border-bottom:1px solid #F5F6F9;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);"></div>
+          <div>
+            <div style="font-weight:600;font-size:13px;color:#0D0F14;">clinica_dental_jerez</div>
+            <div style="font-size:11px;color:#7C869A;">Clínica Dental · Jerez</div>
+          </div>
+        </div>
+        <div style="background:#F5F6F9;height:160px;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;">
+            <div style="font-size:32px;margin-bottom:6px;">🦷</div>
+            <div style="font-size:12px;color:#7C869A;">Foto del equipo</div>
+          </div>
+        </div>
+        <div style="padding:12px 14px;">
+          <div style="display:flex;gap:12px;margin-bottom:8px;">
+            <span style="font-size:18px;">🤍</span>
+            <span style="font-size:18px;">💬</span>
+          </div>
+          <div style="font-size:12px;color:#0D0F14;line-height:1.5;"><strong>clinica_dental_jerez</strong> ¿Sabes cuándo fue tu última revisión? Pide cita ahora.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">11 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 12 — EJEMPLOS DE CONTENIDO
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-12">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Contenido visual</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Ejemplos de contenido</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:32px;">Fotos reales de la clínica, el equipo y el laboratorio.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+      <div>
+        <div style="background:#E2E6EF;border-radius:12px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed #C4CBDA;">
+          <div style="font-size:32px;">🏥</div>
+          <div style="font-size:13px;font-weight:600;color:#7C869A;">Foto clínica</div>
+          <div style="font-size:11px;color:#C4CBDA;text-align:center;padding:0 16px;">foto_clinica_modern.jpg</div>
+        </div>
+        <div style="margin-top:10px;">
+          <div style="font-weight:600;font-size:14px;color:#0D0F14;margin-bottom:2px;">La clínica moderna</div>
+          <div style="font-size:12px;color:#7C869A;">Instalaciones, sala de espera, equipamiento</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="background:#E2E6EF;border-radius:12px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed #C4CBDA;">
+          <div style="font-size:32px;">👨‍⚕️</div>
+          <div style="font-size:13px;font-weight:600;color:#7C869A;">Foto equipo</div>
+          <div style="font-size:11px;color:#C4CBDA;text-align:center;padding:0 16px;">equipo_sonrisa.png</div>
+        </div>
+        <div style="margin-top:10px;">
+          <div style="font-weight:600;font-size:14px;color:#0D0F14;margin-bottom:2px;">El equipo humano</div>
+          <div style="font-size:12px;color:#7C869A;">Genera confianza personal y cercanía</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="background:#E2E6EF;border-radius:12px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed #C4CBDA;">
+          <div style="font-size:32px;">🔬</div>
+          <div style="font-size:13px;font-weight:600;color:#7C869A;">Foto laboratorio</div>
+          <div style="font-size:11px;color:#C4CBDA;text-align:center;padding:0 16px;">laboratorio_digital.jpg</div>
+        </div>
+        <div style="margin-top:10px;">
+          <div style="font-weight:600;font-size:14px;color:#0D0F14;margin-bottom:2px;">El laboratorio digital</div>
+          <div style="font-size:12px;color:#7C869A;">Tecnología propia. Diferenciación clara.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:#fff;border:1px solid #E2E6EF;border-radius:10px;padding:16px 20px;font-size:14px;color:#7C869A;">
+      📸 <strong style="color:#0D0F14;">Necesitaremos una sesión de fotos</strong> para tener material propio. El contenido de calidad es la base de todo lo demás.
+    </div>
+  </div>
+  <span class="slide-num">12 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 13 — EMAIL
+═══════════════════════════════════════════════ -->
+<section class="slide s-dark" id="slide-13">
+  <div class="slide-logo">Navigy</div>
+  <div style="position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle at top right,rgba(53,103,192,.2),transparent 70%);pointer-events:none;"></div>
+
+  <div class="slide-inner">
+    <div class="badge badge-dark"><span class="badge-dot" style="background:#5A8DE8;"></span>Pilar 4</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;">
+      <div>
+        <h2 class="h-title" style="color:#fff;margin-bottom:12px;">Campañas de email</h2>
+        <p style="color:rgba(255,255,255,.55);font-size:15px;margin-bottom:28px;line-height:1.6;">
+          La clínica tiene <strong style="color:#fff;">30.000 contactos de email</strong>.<br>
+          Esto es un activo enorme — y está sin usar.
+        </p>
+        <ul class="blist blist-white" style="margin-bottom:24px;">
+          <li>Consejos de salud dental mensuales</li>
+          <li>Recordatorios de revisión anual</li>
+          <li>Información sobre nuevos tratamientos</li>
+          <li>Ofertas para pacientes existentes</li>
+        </ul>
+        <div style="font-size:14px;color:rgba(255,255,255,.45);line-height:1.6;">
+          Cuando alguien necesite un dentista → la clínica ya está en su mente.
+        </div>
+      </div>
+
+      <div class="card-dark" style="border:1px solid rgba(53,103,192,.3);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px;">El activo dormido</div>
+
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:56px;font-weight:800;letter-spacing:-0.04em;color:#3567C0;line-height:1;">30.000</div>
+          <div style="font-size:15px;color:rgba(255,255,255,.55);margin-top:4px;">contactos de email</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.05);border-radius:6px;">
+            <span style="font-size:13px;color:rgba(255,255,255,.6);">Tasa apertura media</span>
+            <span style="font-size:13px;font-weight:700;color:#5A8DE8;">~22%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.05);border-radius:6px;">
+            <span style="font-size:13px;color:rgba(255,255,255,.6);">Emails abiertos por envío</span>
+            <span style="font-size:13px;font-weight:700;color:#5A8DE8;">~6.600</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(53,103,192,.15);border-radius:6px;border:1px solid rgba(53,103,192,.3);">
+            <span style="font-size:13px;color:rgba(255,255,255,.8);font-weight:600;">Coste por contacto</span>
+            <span style="font-size:13px;font-weight:700;color:#A8C4F4;">Casi 0€</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.25);">13 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 14 — SOFTWARE NAVIGY
+═══════════════════════════════════════════════ -->
+<section class="slide s-blue" id="slide-14">
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 80% 20%,rgba(255,255,255,.08),transparent 60%);pointer-events:none;"></div>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:24px;">
+      <span style="width:6px;height:6px;background:#fff;border-radius:50%;opacity:.7;display:inline-block;"></span>
+      Pilar 5
+    </div>
+
+    <h2 class="h-title" style="color:#fff;margin-bottom:16px;">Software Navigy</h2>
+    <p style="font-size:17px;color:rgba(255,255,255,.65);max-width:520px;margin:0 auto 40px;line-height:1.6;">
+      Atraer pacientes no basta. Hay que <strong style="color:#fff;">capturar cada contacto</strong> y gestionarlo hasta que se convierte en cita.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:700px;margin:0 auto;">
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">📋</div>
+        <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:6px;">Registrar contactos</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">Todos los leads en un solo lugar</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">🔄</div>
+        <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:6px;">Gestionar pipeline</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">Ver en qué fase está cada paciente</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">⚡</div>
+        <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:6px;">Automatizar seguimiento</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;">Sin trabajo manual extra</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.3);">14 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 15 — PIPELINE
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-15">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Gestión de pacientes</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Pipeline de seguimiento</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:40px;">Cada contacto sigue un proceso claro. Nada se pierde.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:800px;margin:0 auto;">
+
+      <div style="text-align:center;position:relative;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#3567C0;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(53,103,192,.3);">
+          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Nuevo contacto</div>
+        <div style="font-size:12px;color:#7C869A;">Llega del formulario o teléfono</div>
+        <div style="position:absolute;top:30px;right:-10px;font-size:20px;color:#3567C0;z-index:1;">→</div>
+      </div>
+
+      <div style="text-align:center;position:relative;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#EBF1FC;border:2px solid #3567C0;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="24" height="24" fill="none" stroke="#3567C0" stroke-width="2" viewBox="0 0 24 24"><path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Contactado</div>
+        <div style="font-size:12px;color:#7C869A;">WhatsApp o llamada en minutos</div>
+        <div style="position:absolute;top:30px;right:-10px;font-size:20px;color:#3567C0;z-index:1;">→</div>
+      </div>
+
+      <div style="text-align:center;position:relative;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#EBF1FC;border:2px solid #3567C0;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="24" height="24" fill="none" stroke="#3567C0" stroke-width="2" viewBox="0 0 24 24"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Cita programada</div>
+        <div style="font-size:12px;color:#7C869A;">Con recordatorio automático</div>
+        <div style="position:absolute;top:30px;right:-10px;font-size:20px;color:#3567C0;z-index:1;">→</div>
+      </div>
+
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#1DAA72;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(29,170,114,.25);">
+          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:#0D0F14;margin-bottom:4px;">Nuevo paciente</div>
+        <div style="font-size:12px;color:#7C869A;">Tratamiento realizado</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:40px;background:#fff;border:1px solid #E2E6EF;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:14px;">
+      <div style="width:40px;height:40px;min-width:40px;background:#D1FAE5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">✅</div>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:2px;">Sin el pipeline, los contactos se pierden</div>
+        <div style="font-size:13px;color:#7C869A;">Con él, cada contacto sigue el proceso hasta convertirse en paciente.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">15 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 16 — AUTOMATIZACIONES
+═══════════════════════════════════════════════ -->
+<section class="slide s-light" id="slide-16">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Automatizaciones</div>
+    <h2 class="h-title" style="margin-bottom:8px;">El sistema trabaja solo</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:36px;">Las automatizaciones mejoran la experiencia del paciente sin trabajo manual.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card" style="display:flex;align-items:flex-start;gap:16px;">
+        <div style="width:44px;height:44px;min-width:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">⚡</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:5px;">Respuesta automática a consultas</div>
+          <div style="font-size:13px;color:#7C869A;line-height:1.5;">El paciente recibe un mensaje en minutos, antes de llamar a la competencia.</div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;align-items:flex-start;gap:16px;">
+        <div style="width:44px;height:44px;min-width:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">📅</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:5px;">Recordatorios de cita</div>
+          <div style="font-size:13px;color:#7C869A;line-height:1.5;">Menos no-shows. El paciente recibe aviso 24h antes de su cita.</div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;align-items:flex-start;gap:16px;">
+        <div style="width:44px;height:44px;min-width:44px;background:#EBF1FC;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">⭐</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:5px;">Solicitud de reseñas</div>
+          <div style="font-size:13px;color:#7C869A;line-height:1.5;">Después de cada visita, el sistema pide automáticamente una reseña en Google.</div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;align-items:flex-start;gap:16px;border-color:#3567C0;background:#FAFBFF;">
+        <div style="width:44px;height:44px;min-width:44px;background:#3567C0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">🔄</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#0D0F14;margin-bottom:5px;">Seguimiento de pacientes</div>
+          <div style="font-size:13px;color:#7C869A;line-height:1.5;">Recordatorio automático para pacientes que llevan tiempo sin revisarse.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">16 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 17 — PANEL DE RESULTADOS
+═══════════════════════════════════════════════ -->
+<section class="slide s-surface" id="slide-17">
+  <div class="slide-inner">
+    <div class="badge"><span class="badge-dot"></span>Visibilidad total</div>
+    <h2 class="h-title" style="margin-bottom:8px;">Panel de resultados</h2>
+    <p style="color:#7C869A;font-size:16px;margin-bottom:32px;">Todo el rendimiento del sistema en un solo panel.</p>
+
+    <div style="background:#fff;border:1px solid #E2E6EF;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(13,15,20,.08);">
+      <!-- Dashboard topbar -->
+      <div style="background:#fff;border-bottom:1px solid #E2E6EF;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:#0D0F14;">Panel Navigy — Clínica Dental Jerez</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="background:#EBF1FC;color:#3567C0;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;">Últimos 30 días</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #E2E6EF;">
+        <div style="padding:20px 24px;border-right:1px solid #E2E6EF;">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#7C869A;margin-bottom:8px;">Contactos nuevos</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#0D0F14;letter-spacing:-0.03em;margin-bottom:4px;">47</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#1DAA72;font-weight:600;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>+23% vs mes anterior
+          </div>
+        </div>
+        <div style="padding:20px 24px;border-right:1px solid #E2E6EF;">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#7C869A;margin-bottom:8px;">Citas agendadas</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#0D0F14;letter-spacing:-0.03em;margin-bottom:4px;">31</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#1DAA72;font-weight:600;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>66% tasa de conversión
+          </div>
+        </div>
+        <div style="padding:20px 24px;">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#7C869A;margin-bottom:8px;">Reseñas nuevas</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;color:#0D0F14;letter-spacing:-0.03em;margin-bottom:4px;">12</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#F59E0B;font-weight:600;">
+            ★ Media 4.9 en Google Maps
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom note -->
+      <div style="padding:14px 24px;display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#1DAA72;"></div>
+        <div style="font-size:13px;color:#7C869A;">Datos actualizados en tiempo real · Acceso desde móvil y ordenador</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">17 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 18 — CÓMO FUNCIONA EL SISTEMA COMPLETO
+═══════════════════════════════════════════════ -->
+<section class="slide s-dark" id="slide-18">
+  <div class="slide-logo">Navigy</div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(53,103,192,.12),transparent 70%);pointer-events:none;"></div>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div class="badge badge-dark" style="margin:0 auto 24px;"><span class="badge-dot" style="background:#5A8DE8;"></span>El sistema completo</div>
+    <h2 class="h-title" style="color:#fff;margin-bottom:40px;">Así funciona todo junto</h2>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;max-width:500px;margin:0 auto;">
+
+      <div style="background:rgba(53,103,192,.15);border:1px solid rgba(53,103,192,.3);border-radius:10px;padding:14px 24px;width:100%;text-align:center;">
+        <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:2px;">Punto de partida</div>
+        <div style="font-weight:700;font-size:15px;color:#fff;">Persona busca dentista en Google</div>
+      </div>
+      <div style="color:rgba(53,103,192,.6);font-size:22px;line-height:1.4;">↓</div>
+
+      <div style="background:#13161F;border:1px solid #252A3A;border-radius:10px;padding:12px 24px;width:100%;text-align:center;">
+        <div style="font-weight:600;font-size:14px;color:rgba(255,255,255,.75);">Encuentra la clínica (web + Maps + Blog)</div>
+      </div>
+      <div style="color:rgba(53,103,192,.6);font-size:22px;line-height:1.4;">↓</div>
+
+      <div style="background:#13161F;border:1px solid #252A3A;border-radius:10px;padding:12px 24px;width:100%;text-align:center;">
+        <div style="font-weight:600;font-size:14px;color:rgba(255,255,255,.75);">Revisa reseñas e Instagram → confía</div>
+      </div>
+      <div style="color:rgba(53,103,192,.6);font-size:22px;line-height:1.4;">↓</div>
+
+      <div style="background:#13161F;border:1px solid #252A3A;border-radius:10px;padding:12px 24px;width:100%;text-align:center;">
+        <div style="font-weight:600;font-size:14px;color:rgba(255,255,255,.75);">Contacta — el sistema lo registra</div>
+      </div>
+      <div style="color:rgba(53,103,192,.6);font-size:22px;line-height:1.4;">↓</div>
+
+      <div style="background:#13161F;border:1px solid #252A3A;border-radius:10px;padding:12px 24px;width:100%;text-align:center;">
+        <div style="font-weight:600;font-size:14px;color:rgba(255,255,255,.75);">Respuesta automática → cita agendada</div>
+      </div>
+      <div style="color:rgba(53,103,192,.6);font-size:22px;line-height:1.4;">↓</div>
+
+      <div style="background:linear-gradient(135deg,#1DAA72,#16A34A);border-radius:10px;padding:14px 24px;width:100%;text-align:center;box-shadow:0 4px 20px rgba(29,170,114,.3);">
+        <div style="font-weight:800;font-size:16px;color:#fff;">✓ Nuevo paciente</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.25);">18 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 19 — RESULTADO
+═══════════════════════════════════════════════ -->
+<section class="slide s-blue" id="slide-19">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(255,255,255,.06),transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(255,255,255,.06),transparent 50%);pointer-events:none;"></div>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:28px;">
+      El resultado
+    </div>
+    <h2 class="h-display" style="color:#fff;margin-bottom:48px;">Qué conseguimos</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;max-width:900px;margin:0 auto;">
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:28px 20px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">Más visibilidad</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.5;">Aparecer cuando buscan</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:28px 20px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">🤝</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">Más confianza</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.5;">Web, reseñas y redes</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:28px 20px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">⭐</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">Más reseñas</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.5;">Sistema automático</div>
+      </div>
+      <div style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:28px 20px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">🦷</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">Más pacientes</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;">Cada mes. Sin anuncios.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.3);">19 / 20</span>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 20 — INFRAESTRUCTURA COMPLETA
+═══════════════════════════════════════════════ -->
+<section class="slide s-dark" id="slide-20">
+  <div class="slide-logo">Navigy</div>
+  <div style="position:absolute;bottom:0;right:0;width:500px;height:400px;background:radial-gradient(circle at bottom right,rgba(53,103,192,.15),transparent 60%);pointer-events:none;"></div>
+
+  <div class="slide-inner">
+    <div class="badge badge-dark"><span class="badge-dot" style="background:#5A8DE8;"></span>Resumen</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;">
+      <div>
+        <h2 class="h-title" style="color:#fff;margin-bottom:12px;">Infraestructura completa</h2>
+        <p style="color:rgba(255,255,255,.45);font-size:15px;margin-bottom:28px;line-height:1.6;">Todo lo que vamos a construir para la clínica, de cero a completo.</p>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#1DAA72;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Web profesional optimizada para SEO</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#1DAA72;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Google Business Profile optimizado</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#1DAA72;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Sistema automático de reseñas</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#1DAA72;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Redes sociales con contenido mensual</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#1DAA72;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Campañas de email a 30.000 contactos</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:24px;height:24px;min-width:24px;background:#3567C0;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span style="font-size:15px;color:rgba(255,255,255,.8);">Software Navigy — CRM + automatizaciones</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card-dark" style="border:1px solid rgba(53,103,192,.3);text-align:center;padding:32px 24px;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;">Inversión mensual</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:48px;font-weight:800;letter-spacing:-0.04em;color:#fff;line-height:1;margin-bottom:4px;">400€</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">/mes · Sin permanencia</div>
+          <div style="background:rgba(53,103,192,.15);border-radius:8px;padding:12px;font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;">
+            Todo incluido. Sin costes ocultos.<br>Sin contrato a largo plazo.
+          </div>
+        </div>
+
+        <div style="background:rgba(29,170,114,.1);border:1px solid rgba(29,170,114,.3);border-radius:12px;padding:16px 20px;text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:#4ADE80;margin-bottom:4px;">¿Cuánto vale un paciente nuevo?</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.5);">Si un tratamiento medio es 600€, con 1 paciente nuevo ya se cubre la inversión.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num" style="color:rgba(255,255,255,.25);">20 / 20</span>
+</section>
+
+<script>
+  // Build nav dots
+  const total = 20;
+  const nav = document.getElementById('nav-dots');
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = () => document.getElementById('slide-' + i).scrollIntoView({behavior:'smooth'});
+    nav.appendChild(d);
+  }
+
+  // Update active dot on scroll
+  const slides = Array.from({length: total}, (_, i) => document.getElementById('slide-' + (i+1)));
+  const dots = Array.from(nav.children);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = slides.indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, {threshold: 0.5});
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    const active = dots.findIndex(d => d.classList.contains('active'));
+    if (e.key === 'ArrowDown' && active < total - 1) slides[active + 1].scrollIntoView({behavior:'smooth'});
+    if (e.key === 'ArrowUp' && active > 0) slides[active - 1].scrollIntoView({behavior:'smooth'});
+  });
+</script>
+</body>
+</html>
